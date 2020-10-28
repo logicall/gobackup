@@ -1,7 +1,9 @@
 package model
 
 import (
+	"github.com/spf13/viper"
 	"os"
+	"path"
 
 	"github.com/huacnlee/gobackup/archive"
 	"github.com/huacnlee/gobackup/compressor"
@@ -59,10 +61,14 @@ func (ctx Model) Perform() {
 
 // Cleanup model temp files
 func (ctx Model) cleanup() {
-	logger.Info("Cleanup temp dir:" + config.TempPath + "...\n")
-	err := os.RemoveAll(config.TempPath)
+	tempPath := path.Join(viper.GetString("models."+ctx.Config.Name+".temp_path"), "gobackup")
+
+	//logger.Info("Cleanup temp dir:" + config.TempPath + "...\n")
+	logger.Info("Cleanup temp dir:" + tempPath + "...\n")
+
+	err := os.RemoveAll(tempPath)
 	if err != nil {
-		logger.Error("Cleanup temp dir "+config.TempPath+" error:", err)
+		logger.Error("Cleanup temp dir "+tempPath+" error:", err)
 	}
 	logger.Info("======= End " + ctx.Config.Name + " =======\n\n")
 }

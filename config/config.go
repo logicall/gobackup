@@ -2,12 +2,12 @@ package config
 
 import (
 	"fmt"
+	"github.com/huacnlee/gobackup/helper"
+	"github.com/huacnlee/gobackup/logger"
+	"github.com/spf13/viper"
 	"os"
 	"path"
 	"time"
-
-	"github.com/huacnlee/gobackup/logger"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -51,7 +51,6 @@ func init() {
 
 	IsTest = os.Getenv("GO_ENV") == "test"
 	HomeDir = os.Getenv("HOME")
-	TempPath = path.Join(os.TempDir(), "gobackup", fmt.Sprintf("%d", time.Now().UnixNano()))
 
 	if IsTest {
 		viper.SetConfigName("gobackup_test")
@@ -87,7 +86,21 @@ func init() {
 
 func loadModel(key string) (model ModelConfig) {
 	model.Name = key
+	fmt.Println(viper.GetString("models." + key + ".temp_path"))
+
+	if viper.GetString("models."+key+".temp_path") != "" {
+		fmt.Println("one")
+		if helper.IsExistsPath(viper.GetString("models."+key+".temp_path")) == true {
+			TempPath = path.Join(viper.GetString("models."+key+".temp_path"), "gobackup", fmt.Sprintf("%d", time.Now().UnixNano()))
+		} else {
+			helper.MkdirP(viper.GetString("models." + key + ".temp_path"))
+			TempPath = path.Join(viper.GetString("models."+key+".temp_path"), "gobackup", fmt.Sprintf("%d", time.Now().UnixNano()))
+		}
+	} else {
+		TempPath = path.Join(os.TempDir(), "gobackup", fmt.Sprintf("%d", time.Now().UnixNano()))
+	}
 	model.DumpPath = path.Join(TempPath, key)
+	fmt.Println(model.DumpPath)
 	model.Viper = viper.Sub("models." + key)
 
 	model.CompressWith = SubConfig{

@@ -22,7 +22,9 @@ type Context interface {
 }
 
 func (ctx *Base) archiveFilePath(ext string) string {
-	return path.Join(os.TempDir(), "gobackup", time.Now().Format("2006.01.02.15.04.05")+ext)
+
+	//return path.Join(os.TempDir(), "gobackup", time.Now().Format("2006.01.02.15.04.05")+ext)
+	return path.Join(viper.GetString("models."+ctx.model.Name+".temp_path"), "gobackup", time.Now().Format("2006.01.02.15.04.05")+ext)
 }
 
 func newBase(model config.ModelConfig) (base Base) {
