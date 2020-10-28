@@ -61,6 +61,7 @@ func (ctx *PostgreSQL) prepare() (err error) {
 	if len(ctx.username) > 0 {
 		dumpArgs = append(dumpArgs, "--username="+ctx.username)
 	}
+	dumpArgs = append(dumpArgs, "-Fc")
 
 	ctx.dumpCommand = "pg_dump " + strings.Join(dumpArgs, " ") + " " + ctx.database
 
