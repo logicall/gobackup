@@ -86,10 +86,7 @@ func init() {
 
 func loadModel(key string) (model ModelConfig) {
 	model.Name = key
-	fmt.Println(viper.GetString("models." + key + ".temp_path"))
-
 	if viper.GetString("models."+key+".temp_path") != "" {
-		fmt.Println("one")
 		if helper.IsExistsPath(viper.GetString("models."+key+".temp_path")) == true {
 			TempPath = path.Join(viper.GetString("models."+key+".temp_path"), "gobackup", fmt.Sprintf("%d", time.Now().UnixNano()))
 		} else {
@@ -100,7 +97,6 @@ func loadModel(key string) (model ModelConfig) {
 		TempPath = path.Join(os.TempDir(), "gobackup", fmt.Sprintf("%d", time.Now().UnixNano()))
 	}
 	model.DumpPath = path.Join(TempPath, key)
-	fmt.Println(model.DumpPath)
 	model.Viper = viper.Sub("models." + key)
 
 	model.CompressWith = SubConfig{

@@ -14,6 +14,8 @@ type Base struct {
 	archivePath string
 	viper       *viper.Viper
 	keep        int
+	sync        string
+	syncLimit   string
 }
 
 // Context storage interface
@@ -33,6 +35,8 @@ func newBase(model config.ModelConfig, archivePath string) (base Base) {
 
 	if base.viper != nil {
 		base.keep = base.viper.GetInt("keep")
+		base.sync = base.viper.GetString("sync")
+		base.syncLimit = base.viper.GetString("sync_limit")
 	}
 
 	return

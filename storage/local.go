@@ -4,6 +4,7 @@ import (
 	"github.com/huacnlee/gobackup/helper"
 	"github.com/huacnlee/gobackup/logger"
 	"path"
+	"strings"
 )
 
 // Local storage
@@ -24,7 +25,18 @@ func (ctx *Local) open() (err error) {
 func (ctx *Local) close() {}
 
 func (ctx *Local) upload(fileKey string) (err error) {
-	_, err = helper.Exec("cp", ctx.archivePath, ctx.destPath)
+
+	if ctx.Base.sync == "rsync" {
+		rsyncArgs := []string{}
+		if len(ctx.Base.syncLimit) > 0 {
+			rsyncArgs = append(rsyncArgs, "--bwlimit="+ctx.Base.syncLimit)
+		}
+		rsyncCMD := "rsync " + strings.Join(rsyncArgs, " ")
+		_, err = helper.Exec(rsyncCMD, ctx.archivePath, ctx.destPath)
+	} else if ctx.Base.sync == "cp" {
+		_, err = helper.Exec("cp", ctx.archivePath, ctx.destPath)
+	}
+
 	if err != nil {
 		return err
 	}
